@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Profile</title>
+  <style>
+    body {
+      background-color: #f3f4f6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .profile-card {
+      background-color: white;
+      padding: 2rem 2.5rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #1f2937;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #4b5563;
+    }
+
+    .value {
+      margin-left: 0.5rem;
+      color: #111827;
+    }
+
+    .logout-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #ef4444;
+      text-decoration: none;
+    }
+
+    .logout-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-card">
+    <h2>👤 Staff Profile</h2>
+
+    <div class="field">
+      <span class="label">Name:</span>
+      <span class="value">{{ staff.name }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Email:</span>
+      <span class="value">{{ staff.email }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Role:</span>
+      <span class="value">{% if staff.is_admin %}Admin{% else %}Staff{% endif %}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Account Active:</span>
+      <span class="value">{{ staff.is_active }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Created:</span>
+      <span class="value">{{ staff.created_at|date:"Y-m-d H:i" }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Last Updated:</span>
+      <span class="value">{{ staff.updated_at|date:"Y-m-d H:i" }}</span>
+    </div>
+
+    <a class="logout-link" href="{% url 'logout' %}">🚪 Logout</a>
+  </div>
+</body>
+</html>
