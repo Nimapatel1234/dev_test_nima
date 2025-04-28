@@ -37,22 +37,22 @@ def update_ticket_status(request, ticket_id):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        uploaded_file = request.FILES.get('file')
+        uploaded_files = request.FILES.getlist('files')  # ✅ Get list of files
 
         # Allowed Status Changes
         if staff.is_admin:
-            allowed_statuses = ['Draft', 'Ongoing', 'Completed', 'Archived']
+            allowed_statuses = ['draft', 'ongoing', 'completed', 'archived']
         else:
-            allowed_statuses = ['Ongoing', 'Completed']
+            allowed_statuses = ['ongoing', 'completed']
 
         if new_status in allowed_statuses:
             ticket.status = new_status
             ticket.save()
 
-        # Save uploaded attachment
-        if uploaded_file:
-            Attachment.objects.create(ticket=ticket, file=uploaded_file)
+        # Save uploaded attachments
+        for file in uploaded_files:  # ✅ Loop through files
+            Attachment.objects.create(ticket=ticket, file=file)
 
-        return redirect('user_profile')  # ✅ Redirect to Profile after update
+        return redirect('user_profile')  # or 'tickets:ticket_dashboard'
 
     return render(request, 'tickets/update_ticket_status.html', {'ticket': ticket})

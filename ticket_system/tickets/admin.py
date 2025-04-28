@@ -17,9 +17,11 @@ class AttachmentAdmin(admin.ModelAdmin):
     list_display = ['ticket', 'file', 'uploaded_at']
 
 
-from .models import Project
+
+from .models import Ticket, Attachment, Project
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at', 'updated_at')
+    search_fields = ('name',)
     filter_horizontal = ('staff_users',)
