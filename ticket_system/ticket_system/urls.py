@@ -27,7 +27,8 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
-    
+    # path('', include(('tickets.urls', 'tickets'), namespace='tickets')),  # ✅ CORRECT
+
 ]
 
 if settings.DEBUG:

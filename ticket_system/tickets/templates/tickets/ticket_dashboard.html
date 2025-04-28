@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticket Dashboard</title>
+  <style>
+    body {
+      background-color: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h2, h3 {
+      color: #111827;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .status-summary {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .status-box {
+      background-color: #e0e7ff;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #1e3a8a;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.8rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    tr:hover {
+      background-color: #f9fafb;
+    }
+
+    .actions a {
+      background-color: #3b82f6;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .actions a:hover {
+      background-color: #2563eb;
+    }
+
+    .no-tickets {
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>🎫 Ticket Dashboard</h2>
+
+    <div class="status-summary">
+      <div class="status-box">📝 Draft: {{ draft_count }}</div>
+      <div class="status-box">🚧 Ongoing: {{ ongoing_count }}</div>
+      <div class="status-box">✅ Completed: {{ completed_count }}</div>
+    </div>
+
+    <h3>Assigned Tickets</h3>
+
+    {% if tickets %}
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Assigned To</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td>{{ ticket.name }}</td>
+          <td>{{ ticket.description }}</td>
+          <td>{{ ticket.status }}</td>
+          <td>{{ ticket.assigned_to }}</td>
+          <td class="actions">
+            <a href="{% url 'update_ticket_status' ticket.id %}">Update Status</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="no-tickets">No Tickets Found.</div>
+    {% endif %}
+  </div>
+</body>
+</html>
+

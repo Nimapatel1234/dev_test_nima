@@ -1,47 +1,58 @@
-
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from users.models import StaffUser
 from .models import Ticket, Attachment
+from django.http import HttpResponse
 
+# Ticket Dashboard
 @login_required
 def ticket_dashboard(request):
-    staff = StaffUser.objects.get(user=request.user)
-    tickets = Ticket.objects.all() if staff.is_admin else Ticket.objects.filter(assigned_to=staff)
+    if request.user.is_staff:  # Admin User
+        tickets = Ticket.objects.all()
+    else:  # Staff User
+        tickets = Ticket.objects.filter(assigned_to=request.user)
+
+    # Ticket Counts
+    draft_count = tickets.filter(status='Draft').count()
+    ongoing_count = tickets.filter(status='Ongoing').count()
+    completed_count = tickets.filter(status='Completed').count()
 
     context = {
-        'user': staff,
         'tickets': tickets,
-        'draft_count': tickets.filter(status='draft').count(),
-        'ongoing_count': tickets.filter(status='ongoing').count(),
-        'completed_count': tickets.filter(status='completed').count(),
+        'draft_count': draft_count,
+        'ongoing_count': ongoing_count,
+        'completed_count': completed_count,
     }
-    return render(request, 'tickets/dashboard.html', context)
+    return render(request, 'tickets/ticket_dashboard.html', context)
 
+# Update Ticket Status
 @login_required
-def update_ticket_status(request, pk):
-    ticket = get_object_or_404(Ticket, pk=pk)
-    staff = StaffUser.objects.get(user=request.user)
+def update_ticket_status(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
 
-    if request.method == "POST":
-        new_status = request.POST.get("status")
-        file = request.FILES.get("file")
+    try:
+        staff = StaffUser.objects.get(user=request.user)
+    except StaffUser.DoesNotExist:
+        return HttpResponse('You are not a staff user.', status=403)
 
-        # Role-based allowed status transitions
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        uploaded_file = request.FILES.get('file')
+
+        # Allowed Status Changes
         if staff.is_admin:
-            allowed_statuses = ['draft', 'ongoing', 'completed', 'archived']
+            allowed_statuses = ['Draft', 'Ongoing', 'Completed', 'Archived']
         else:
-            allowed_statuses = ['ongoing', 'completed']
+            allowed_statuses = ['Ongoing', 'Completed']
 
         if new_status in allowed_statuses:
             ticket.status = new_status
             ticket.save()
 
-        # Handle file upload
-        if file:
-            Attachment.objects.create(ticket=ticket, file=file)
+        # Save uploaded attachment
+        if uploaded_file:
+            Attachment.objects.create(ticket=ticket, file=uploaded_file)
 
-        return redirect('ticket_dashboard')
+        return redirect('user_profile')  # ✅ Redirect to Profile after update
 
-    return render(request, 'tickets/update_ticket.html', {'ticket': ticket, 'user': staff})
+    return render(request, 'tickets/update_ticket_status.html', {'ticket': ticket})

@@ -26,3 +26,17 @@ class Attachment(models.Model):
 
     def __str__(self):
         return f"{self.file.name}"
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Project(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    staff_users = models.ManyToManyField(User, related_name='projects')
+
+    def __str__(self):
+        return self.name
